@@ -4,7 +4,7 @@ defmodule Pg2PubSubTest do
 
   setup do
     :pg2.which_groups
-    |> Enum.map fn (x) -> :pg2.delete(x) end
+    |> Enum.map(fn (x) -> :pg2.delete(x) end)
     :ok
   end
 
@@ -41,5 +41,14 @@ defmodule Pg2PubSubTest do
 
     assert_receive :foo
     refute_receive :foo # check only received once
+  end
+
+  test "supports more complex topics than just strings" do
+    Pg2PubSub.subscribe({:context, "bar"})
+
+    Pg2PubSub.publish({:context, "bar"}, :bar)
+    Pg2PubSub.unsubscribe({:context, "bar"})
+
+    assert_receive :bar
   end
 end
